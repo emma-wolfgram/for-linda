@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Linda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#1c1533;
+    --bg-mid:#33265a;
+    --bg-mid2:#4a3573;
+    --sunset:#f2966b;
+    --teal:#6fcfc0;
+    --gold:#f6d186;
+    --cream:#fbf6ee;
+    --ink:#2b2140;
+    --pink:#e79bb0;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg-deep);
+    font-family:'Nunito',sans-serif;
+    color:var(--cream);
+    overflow-x:hidden;
+    min-height:100vh;
+  }
+  #stars{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+  }
+  .star{
+    position:absolute; background:var(--gold); border-radius:50%;
+    animation:twinkle 3s ease-in-out infinite;
+    opacity:.6;
+  }
+  @keyframes twinkle{
+    0%,100%{opacity:.25; transform:scale(1);}
+    50%{opacity:.9; transform:scale(1.3);}
+  }
+
+  /* ---------- TITLE SCREEN ---------- */
+  #screen-title{
+    position:relative; z-index:2;
+    min-height:100vh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center;
+    padding:32px;
+  }
+  .eyebrow{
+    font-family:'Nunito',sans-serif; font-weight:800; letter-spacing:.28em;
+    text-transform:uppercase; font-size:12px; color:var(--teal); margin-bottom:18px;
+  }
+  h1.title{
+    font-family:'Fredoka',sans-serif; font-weight:700;
+    font-size:clamp(2.4rem,8vw,4.6rem); margin:0; line-height:1.05;
+    color:var(--cream);
+    text-shadow:0 0 30px rgba(242,150,107,.35);
+  }
+  .title-sub{
+    font-size:16px; color:var(--gold); margin-top:14px; max-width:420px;
+    font-weight:600;
+  }
+  .plush-row{
+    display:flex; gap:14px; margin:34px 0; font-size:34px;
+  }
+  .plush-row span{ animation:bob 3.4s ease-in-out infinite; }
+  .plush-row span:nth-child(2){animation-delay:.4s;}
+  .plush-row span:nth-child(3){animation-delay:.8s;}
+  .plush-row span:nth-child(4){animation-delay:1.2s;}
+  .plush-row span:nth-child(5){animation-delay:1.6s;}
+  @keyframes bob{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-10px);}
+  }
+  button.primary{
+    font-family:'Fredoka',sans-serif; font-weight:600; font-size:18px;
+    background:linear-gradient(135deg,var(--sunset),var(--pink));
+    color:var(--ink); border:none; padding:16px 38px; border-radius:999px;
+    cursor:pointer; box-shadow:0 8px 24px rgba(242,150,107,.35);
+    transition:transform .15s ease;
+  }
+  button.primary:hover{ transform:translateY(-3px) scale(1.03); }
+  button.primary:focus-visible{ outline:3px solid var(--teal); outline-offset:3px; }
+
+  /* ---------- MAP SCREEN ---------- */
+  #screen-map{
+    position:relative; z-index:2; display:none;
+    padding:60px 20px 140px; max-width:640px; margin:0 auto;
+  }
+  #screen-map.active{display:block;}
+  .map-header{
+    text-align:center; margin-bottom:40px;
+  }
+  .map-header h2{
+    font-family:'Fredoka',sans-serif; font-size:clamp(1.6rem,5vw,2.2rem);
+    margin:0 0 8px;
+  }
+  .map-header p{ color:var(--gold); font-weight:600; margin:0; font-size:14px;}
+
+  .trail{
+    position:relative;
+    display:flex; flex-direction:column; align-items:center; gap:0;
+  }
+  .trail svg.connector{ display:block; margin:-2px 0; }
+
+  .node{
+    position:relative; z-index:2;
+    width:min(78vw,300px);
+    background:rgba(251,246,238,.06);
+    border:1.5px solid rgba(246,209,134,.35);
+    backdrop-filter:blur(6px);
+    border-radius:20px;
+    padding:16px 18px;
+    display:flex; align-items:center; gap:14px;
+    cursor:pointer;
+    transition:transform .18s ease, border-color .18s ease, background .18s ease;
+    text-align:left;
+  }
+  .node:hover, .node:focus-visible{
+    transform:translateY(-3px);
+    border-color:var(--sunset);
+    background:rgba(251,246,238,.12);
+    outline:none;
+  }
+  .node.left{ align-self:flex-start; margin-left:2%; }
+  .node.right{ align-self:flex-end; margin-right:2%; }
+  .node .icon{
+    font-size:30px; width:46px; height:46px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,.18); border-radius:14px;
+  }
+  .node.visited .icon{ background:rgba(111,207,192,.25); }
+  .node .txt .label{ font-family:'Fredoka',sans-serif; font-size:15px; font-weight:600; color:var(--cream); }
+  .node .txt .date{ font-size:12px; color:var(--teal); font-weight:700; margin-top:2px; }
+  .node .check{ margin-left:auto; font-size:16px; opacity:.85; }
+
+  .node.finale{
+    background:linear-gradient(135deg, rgba(231,155,176,.22), rgba(246,209,134,.18));
+    border-color:var(--pink);
+    align-self:center; margin:20px 0 0;
+  }
+  .node.finale .icon{ background:rgba(231,155,176,.35); }
+
+  /* ---------- MODAL ---------- */
+  #modal-overlay{
+    position:fixed; inset:0; background:rgba(15,10,26,.86);
+    z-index:10; display:none; align-items:center; justify-content:center;
+    padding:24px; backdrop-filter:blur(4px);
+  }
+  #modal-overlay.active{ display:flex; }
+  #modal-card{
+    background:linear-gradient(165deg,#2a2049,#3a2b5e);
+    border:1px solid rgba(246,209,134,.3);
+    border-radius:24px; max-width:520px; width:100%;
+    max-height:86vh; overflow-y:auto;
+    padding:32px 28px 28px; position:relative;
+    animation:pop .28s cubic-bezier(.2,.9,.3,1.2);
+  }
+  @keyframes pop{ from{transform:scale(.9); opacity:0;} to{transform:scale(1); opacity:1;} }
+  #modal-close{
+    position:absolute; top:16px; right:18px; background:none; border:none;
+    color:var(--cream); font-size:22px; cursor:pointer; opacity:.6; line-height:1;
+  }
+  #modal-close:hover{ opacity:1; }
+  #modal-card .m-eyebrow{ color:var(--gold); font-weight:800; font-size:11px; letter-spacing:.2em; text-transform:uppercase; }
+  #modal-card h3{ font-family:'Fredoka',sans-serif; font-size:26px; margin:8px 0 14px; }
+  #modal-card .m-body{ font-size:15.5px; line-height:1.6; color:#e9e2f5; margin-bottom:18px; }
+  .interactive-zone{
+    background:rgba(0,0,0,.18); border-radius:16px; padding:20px;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    min-height:120px; justify-content:center;
+  }
+
+  /* aquarium */
+  .fish-row{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+  .fish-btn{ font-size:30px; background:none; border:none; cursor:pointer; transition:transform .15s; }
+  .fish-btn:hover{ transform:scale(1.2) translateY(-3px); }
+  .fish-btn.done{ opacity:.35; cursor:default; }
+  .sentence{ font-family:'Fredoka',sans-serif; font-size:16px; letter-spacing:.02em; min-height:24px; text-align:center;}
+  .sentence span{ display:inline-block; margin:0 4px; color:var(--gold); }
+
+  /* stars */
+  .star-field{ position:relative; width:100%; height:160px; }
+  .star-pt{
+    position:absolute; width:26px; height:26px; background:none; border:none; cursor:pointer;
+    font-size:22px; color:#5c4d80; transition:color .2s, transform .2s;
+  }
+  .star-pt.lit{ color:var(--gold); transform:scale(1.3); text-shadow:0 0 10px var(--gold); }
+  #constellation-msg{ text-align:center; font-family:'Fredoka',sans-serif; font-size:15px; min-height:20px; }
+
+  /* minecraft */
+  .mc-grid{ display:grid; grid-template-columns:repeat(7,24px); grid-template-rows:repeat(6,24px); gap:2px; }
+  .mc-cell{ width:24px; height:24px; background:rgba(255,255,255,.06); border-radius:3px; transition:background .25s; }
+  .mc-cell.on{ background:#7ac96f; box-shadow:inset 0 0 0 2px #5aa350; }
+
+  /* plush */
+  .plush-grid{ display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+  .plush-item{ background:rgba(255,255,255,.07); border:none; border-radius:14px; padding:12px; width:84px; cursor:pointer; color:var(--cream); font-family:'Nunito',sans-serif; }
+  .plush-item .pe{ font-size:28px; display:block; margin-bottom:4px; }
+  .plush-item .pn{ font-size:11px; font-weight:700; }
+  .plush-caption{ text-align:center; font-size:14px; min-height:20px; color:var(--gold); font-weight:600; }
+
+  /* dallas plane */
+  .plane-track{ position:relative; width:100%; height:60px; }
+  .plane-track .line{ position:absolute; top:50%; left:6%; right:6%; height:2px; background:repeating-linear-gradient(90deg,var(--teal) 0 8px, transparent 8px 16px); }
+  .plane-emoji{ position:absolute; top:calc(50% - 14px); left:6%; font-size:26px; transition:left 1.6s ease; }
+
+  /* generic reveal */
+  .reveal-btn{
+    font-family:'Fredoka',sans-serif; font-weight:600; background:var(--teal); color:var(--ink);
+    border:none; padding:10px 22px; border-radius:999px; cursor:pointer;
+  }
+
+  /* ---------- FINALE ---------- */
+  #screen-finale{
+    position:relative; z-index:2; display:none; min-height:100vh;
+    flex-direction:column; align-items:center; justify-content:center; padding:40px 20px;
+    text-align:center;
+  }
+  #screen-finale.active{ display:flex; }
+  #screen-finale h2{ font-family:'Fredoka',sans-serif; font-size:clamp(1.8rem,6vw,2.6rem); margin-bottom:6px; }
+  #screen-finale .sub{ color:var(--gold); font-weight:700; margin-bottom:30px; }
+
+  .slideshow{
+    position:relative; width:min(90vw,380px); height:min(90vw,380px);
+    max-height:420px;
+  }
+  .slide{
+    position:absolute; inset:0; border-radius:18px; padding:18px;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+    opacity:0; transform:scale(.94) rotate(-2deg);
+    transition:opacity .5s ease, transform .5s ease;
+    box-shadow:0 20px 40px rgba(0,0,0,.4);
+    border:6px solid var(--cream);
+  }
+  .slide.active{ opacity:1; transform:scale(1) rotate(0deg); z-index:3; }
+  .slide .cap{ font-family:'Fredoka',sans-serif; color:var(--ink); background:var(--cream);
+    padding:6px 10px; border-radius:8px; font-size:13px; margin-top:auto; font-weight:600; }
+  .slide-controls{ display:flex; gap:16px; align-items:center; margin-top:22px; }
+  .slide-controls button{ background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.3); color:var(--cream); width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:16px; }
+  .dots{ display:flex; gap:6px; }
+  .dot{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.25); }
+  .dot.on{ background:var(--gold); }
+
+  .closing-msg{
+    max-width:460px; margin-top:34px; font-size:16px; line-height:1.7; color:#f0e8fb;
+  }
+  .closing-msg b{ color:var(--gold); font-family:'Fredoka',sans-serif; }
+  .heart{ font-size:14px; }
+
+  canvas#confetti{ position:fixed; inset:0; pointer-events:none; z-index:20; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+<canvas id="confetti"></canvas>
+
+<!-- TITLE -->
+<div id="screen-title">
+  <div class="eyebrow">a one-year quest</div>
+  <h1 class="title">For My Linda</h1>
+  <p class="title-sub">(you know who you are, baby)</p>
+  <div class="plush-row">
+    <span>🦫</span><span>🦦</span><span>🧟</span><span>🐬</span><span>🌸</span>
+  </div>
+  <button class="primary" onclick="goTo('map')">Begin the Journey</button>
+</div>
+
+<!-- MAP -->
+<div id="screen-map">
+  <div class="map-header">
+    <h2>A Year, Mapped</h2>
+    <p>tap each stop, my love</p>
+  </div>
+  <div class="trail" id="trail"></div>
+</div>
+
+<!-- MODAL -->
+<div id="modal-overlay">
+  <div id="modal-card">
+    <button id="modal-close" onclick="closeModal()">✕</button>
+    <div class="m-eyebrow" id="m-eyebrow"></div>
+    <h3 id="m-title"></h3>
+    <div class="m-body" id="m-body"></div>
+    <div class="interactive-zone" id="m-zone"></div>
+  </div>
+</div>
+
+<!-- FINALE -->
+<div id="screen-finale">
+  <h2>Happy One Year, My Love</h2>
+  <div class="sub">to be filled with US 💛</div>
+  <div class="slideshow" id="slideshow"></div>
+  <div class="slide-controls">
+    <button onclick="shiftSlide(-1)">‹</button>
+    <div class="dots" id="dots"></div>
+    <button onclick="shiftSlide(1)">›</button>
+  </div>
+  <div class="closing-msg">
+    From freshman year strangers to a shared Minecraft world, an aquarium
+    date to a week under Joshua Tree stars, dinners on the couch to a whole crew
+    of plushies watching over us in our sleep. This year has been filled with so many
+    memories, giggles, jokes, and happiness. I have had the best year with you!
+    Thank you for every bit of it and loving me so unconditionally. 
+    Here's to the next one, and the one after that, and all of them after that.
+    <p>
+      <b>I love you, Baby/Darling/Punkin/My Love/Linda.</b> <span class="heart">💛</span>
+    </p>
+  </div>
+</div>
+
+<script>
+/* ================= STARFIELD ================= */
+const starsEl = document.getElementById('stars');
+for(let i=0;i<70;i++){
+  const s = document.createElement('div');
+  s.className='star';
+  const size = Math.random()*2.4+1;
+  s.style.width=size+'px'; s.style.height=size+'px';
+  s.style.left=Math.random()*100+'%';
+  s.style.top=Math.random()*100+'%';
+  s.style.animationDelay=(Math.random()*3)+'s';
+  starsEl.appendChild(s);
+}
+
+/* ================= NAV ================= */
+function goTo(screen){
+  document.getElementById('screen-title').style.display = screen==='title' ? 'flex':'none';
+  document.getElementById('screen-map').classList.toggle('active', screen==='map');
+  document.getElementById('screen-finale').classList.toggle('active', screen==='finale');
+  if(screen==='finale'){ startSlideshow(); burstConfetti(); }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ================= MEMORY DATA ================= */
+const MEMORIES = [
+  {
+    id:'college', icon:'🎓', label:'Freshman Year', date:'Year 1',
+    eyebrow:'Stop 1', title:'Before It Was "Us"',
+    body:`Long before any of this, we were just two people who met freshman year of
+      college (both taken blegh) no idea that a few years down the line we'd be
+      flirting throughout summer together.`,
+    type:'reveal', revealText:'little did we know 👀'
+  },
+  {
+    id:'official', icon:'💌', label:'Officially Us', date:'That Summer',
+    eyebrow:'Stop 2', title:'Making It Official',
+    body:`Summer after our second year — the summer it stopped being complicated
+    and just became us.`,
+    type:'reveal', revealText:'best decision I made that year'
+  },  
+  {
+    id:'dallas', icon:'✈️', label:'Dallas Visit', date:'Long Distance, Briefly',
+    eyebrow:'Stop 3', title:'Flying to Dallas',
+    body:`Waiting till school starting was just not an option. 
+      So I flew to Dallas (thanks to you sugar mommy) to see you, and it was worth every mile.`,
+    type:'plane'
+  },
+  {
+    id:'aquarium', icon:'🐠', label:'First Date', date:'Aquarium',
+    eyebrow:'Stop 4', title:'The Aquarium Date',
+    body:`Our very first date. Fish tanks, photo ops, and giggles galore.
+    We had so much fun in that little aquarium, and I knew I could spend forever with you.`,
+    type:'aquarium', words:['I','fishin','love','you']
+  },
+  {
+    id:'iceskate', icon:'⛸️', label:'Second Date', date:'Ice Skating',
+    eyebrow:'Stop 5', title:'Ice Skating',
+    body:`Date two: ice skating. Lots of me wobbling, you being gracefull, 
+    a little hand-holding for "balance," and a lot of laughing at each other.`,
+    type:'reveal', revealText:'I love watching you skate, even if I can\'t keep up'
+  },
+  {
+    id:'joshuatree', icon:'🌵', label:'Joshua Tree', date:'Our First Trip',
+    eyebrow:'Stop 6', title:'A Week in Joshua Tree',
+    body:`Our first real trip together — a full week in the desert, more stars
+      than we can see in SD and a cozy airbnb just for us and our puzzles`,
+    type:'stars'
+  },
+  {
+    id:'beach', icon:'🐚', label:'Beach Dates', date:'Sun & Sand',
+    eyebrow:'Stop 7', title:'Beach Days',
+    body:`Beach dates whenever we could get them. Swimming in the cold ocean with you
+    and seagulls stealing my sandwichs. But worth it, every time.`,
+    type:'reveal', revealText:'my white ass getting sunburns is worth it'
+  },
+  {
+    id:'couch', icon:'🍝', label:'Dinners & Movie Nights', date:'Every Week',
+    eyebrow:'Stop 8', title:'Dinner, Couch, Repeat',
+    body:`My favorite part: cooking (mainly ordering) dinner together and collapsing
+      onto the couch for our shows or movies. Simple. Ours.`,
+    type:'reveal', revealText:'the best part of most weeks, honestly'
+  },
+  {
+    id:'minecraft', icon:'🟩', label:'Our Minecraft World', date:'Still Building',
+    eyebrow:'Stop 9', title:'The World We Built',
+    body:`Our very own Minecraft world with some questionable buildings but
+    endless memories together.`,
+    type:'minecraft'
+  },
+  {
+    id:'plushies', icon:'🧸', label:'The Whole Crew', date:'Very Important Members',
+    eyebrow:'Stop 10', title:'Meet the Crew',
+    body:`Gerald, Beaver, Frankie G, Richard, and Squish would like it on record
+      that they are essential to this relationship. Tap each one.`,
+    type:'plush'
+  }
+];
+
+const PLUSH = [
+  {emoji:'🦫', name:'Gerald', caption:'Gerald the platypus, resident overseer.'},
+  {emoji:'🦦', name:'Beaver', caption:'Beaver the sea otter - depesite his deformaties I know you love him.'},
+  {emoji:'🧟', name:'Frankie G', caption:'Frankie G, the Minecraft zombie himself.'},
+  {emoji:'🐬', name:'Richard', caption:'Richard, the weighted dolphin - still upset he was unconsentually air fucked'},
+  {emoji:'🌸', name:'Squish', caption:'Squish, the squishmallow, biggest bed hogger'}
+];
+
+/* ================= BUILD MAP ================= */
+const trail = document.getElementById('trail');
+MEMORIES.forEach((m,i)=>{
+  if(i>0){
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('class','connector');
+    svg.setAttribute('width','40'); svg.setAttribute('height','46');
+    svg.setAttribute('viewBox','0 0 40 46');
+    const dir = i%2===0 ? 1 : -1;
+    svg.innerHTML = `<path d="M20 0 C ${20+dir*30} 16, ${20-dir*30} 30, 20 46"
+      stroke="rgba(246,209,134,.45)" stroke-width="2.5" stroke-dasharray="2 8"
+      stroke-linecap="round" fill="none"/>`;
+    trail.appendChild(svg);
+  }
+  const node = document.createElement('button');
+  node.className = 'node ' + (i%2===0 ? 'left':'right');
+  node.id = 'node-'+m.id;
+  node.innerHTML = `<div class="icon">${m.icon}</div>
+    <div class="txt"><div class="label">${m.label}</div><div class="date">${m.date}</div></div>
+    <div class="check">○</div>`;
+  node.onclick = ()=>openModal(m.id);
+  trail.appendChild(node);
+});
+
+// finale node
+const finaleWrap = document.createElement('div');
+finaleWrap.style.marginTop='30px';
+finaleWrap.style.display='flex';
+finaleWrap.style.justifyContent='center';
+const finaleNode = document.createElement('button');
+finaleNode.className='node finale';
+finaleNode.innerHTML = `<div class="icon">💛</div>
+  <div class="txt"><div class="label">Happy Anniversary</div><div class="date">Open Me Last</div></div>
+  <div class="check">→</div>`;
+finaleNode.onclick = ()=>goTo('finale');
+finaleWrap.appendChild(finaleNode);
+trail.appendChild(finaleWrap);
+
+/* ================= MODAL ================= */
+const visited = new Set();
+function openModal(id){
+  const m = MEMORIES.find(x=>x.id===id);
+  document.getElementById('m-eyebrow').textContent = m.eyebrow;
+  document.getElementById('m-title').textContent = m.title;
+  document.getElementById('m-body').textContent = m.body;
+  const zone = document.getElementById('m-zone');
+  zone.innerHTML='';
+  buildInteractive(m, zone);
+  document.getElementById('modal-overlay').classList.add('active');
+
+  visited.add(id);
+  const nodeEl = document.getElementById('node-'+id);
+  nodeEl.classList.add('visited');
+  nodeEl.querySelector('.check').textContent = '✓';
+}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('active');
+}
+document.getElementById('modal-overlay').addEventListener('click', e=>{
+  if(e.target.id==='modal-overlay') closeModal();
+});
+
+function buildInteractive(m, zone){
+  if(m.type==='reveal'){
+    const btn = document.createElement('button');
+    btn.className='reveal-btn'; btn.textContent='click this real button';
+    const p = document.createElement('div');
+    p.className='sentence'; p.style.marginTop='6px';
+    btn.onclick = ()=>{ p.textContent = m.revealText; btn.style.display='none'; };
+    zone.appendChild(btn); zone.appendChild(p);
+  }
+  else if(m.type==='aquarium'){
+    const row = document.createElement('div'); row.className='fish-row';
+    const sentence = document.createElement('div'); sentence.className='sentence';
+    const spans = m.words.map(()=>{ const s=document.createElement('span'); s.textContent='•••'; return s; });
+    spans.forEach(s=>sentence.appendChild(s));
+    const fishEmojis = ['🐠','🐟','🐡','🐬'];
+    m.words.forEach((w,idx)=>{
+      const b = document.createElement('button');
+      b.className='fish-btn'; b.textContent = fishEmojis[idx%fishEmojis.length];
+      b.onclick = ()=>{ spans[idx].textContent=w; b.classList.add('done'); b.disabled=true; };
+      row.appendChild(b);
+    });
+    zone.appendChild(row); zone.appendChild(sentence);
+  }
+  else if(m.type==='stars'){
+    const field = document.createElement('div'); field.className='star-field';
+    const pts = [[10,20],[30,60],[50,10],[68,55],[85,25],[45,90]];
+    let lit=0;
+    pts.forEach(([x,y])=>{
+      const b=document.createElement('button');
+      b.className='star-pt'; b.textContent='✦';
+      b.style.left=x+'%'; b.style.top=y+'%';
+      b.onclick=()=>{
+        if(b.classList.contains('lit'))return;
+        b.classList.add('lit'); lit++;
+        if(lit===pts.length){ msg.textContent='you are the brightest star'; }
+      };
+      field.appendChild(b);
+    });
+    const msg = document.createElement('div'); msg.id='constellation-msg';
+    zone.appendChild(field); zone.appendChild(msg);
+  }
+  else if(m.type==='minecraft'){
+    const grid = document.createElement('div'); grid.className='mc-grid';
+    const heartCells = [9,10,12,13,16,17,18,19,20,21,23,24,25,26,27,31,32,33,39];
+    const cells=[];
+    for(let i=0;i<42;i++){
+      const c=document.createElement('div'); c.className='mc-cell';
+      grid.appendChild(c); cells.push(c);
+    }
+    zone.appendChild(grid);
+    const btn=document.createElement('button');
+    btn.className='reveal-btn'; btn.style.marginTop='14px'; btn.textContent='place blocks';
+    btn.onclick=()=>{
+      heartCells.forEach((idx,i)=>{ setTimeout(()=>cells[idx].classList.add('on'), i*45); });
+      btn.style.display='none';
+    };
+    zone.appendChild(btn);
+  }
+  else if(m.type==='plush'){
+    const grid=document.createElement('div'); grid.className='plush-grid';
+    const cap=document.createElement('div'); cap.className='plush-caption';
+    PLUSH.forEach(p=>{
+      const b=document.createElement('button'); b.className='plush-item';
+      b.innerHTML=`<span class="pe">${p.emoji}</span><span class="pn">${p.name}</span>`;
+      b.onclick=()=>{ cap.textContent = p.caption; };
+      grid.appendChild(b);
+    });
+    zone.appendChild(grid); zone.appendChild(cap);
+  }
+  else if(m.type==='plane'){
+    const track=document.createElement('div'); track.className='plane-track';
+    track.innerHTML=`<div class="line"></div><div class="plane-emoji" id="plane-em">✈️</div>`;
+    zone.appendChild(track);
+    const cap=document.createElement('div'); cap.className='sentence'; cap.style.marginTop='10px';
+    zone.appendChild(cap);
+    setTimeout(()=>{
+      document.getElementById('plane-em').style.left='88%';
+      setTimeout(()=>{ cap.textContent='wheels down in Dallas ✈️💛'; }, 1700);
+    }, 300);
+  }
+}
+
+/* ================= SLIDESHOW ================= */
+/* NOTE FOR THE BUILDER (that's you!): each slide below has a placeholder
+   gradient background. To use a real photo, replace the "bg" value with:
+   url('your-image.jpg') center/cover   — and add the image file alongside this HTML. */
+const SLIDES = [
+  {bg:"url('aqua.jpg') center/cover", cap:'Aquarium, date one'},
+  {bg:"url('ice.jpg') center/cover", cap:'Ice skating, date two'},
+  {bg:"url('jt.jpg') center/cover", cap:'Joshua Tree'},
+  {bg:"url('beach.jpg') center/cover", cap:'Beach days'},
+  {bg:"url('dallas.jpg') center/cover", cap:'Dallas visit'},
+  {bg:"url('house.png') center/cover", cap:'Our Minecraft world'},
+  {bg:"url('couch.jpg') center/cover", cap:'Dinners & movie nights'},
+  {bg:"url('one_year.jpg') center/cover", cap:'Us, one year in'},
+  {bg:"url('photostrip.png') center 40%/cover", cap:'I LOVE YOU'},
+];
+let slideIdx=0, slideTimer=null;
+function buildSlideshow(){
+  const wrap=document.getElementById('slideshow'); wrap.innerHTML='';
+  const dots=document.getElementById('dots'); dots.innerHTML='';
+  SLIDES.forEach((s,i)=>{
+    const d=document.createElement('div'); d.className='slide'; d.style.background=s.bg;
+    d.innerHTML=`<div class="cap">${s.cap}</div>`;
+    wrap.appendChild(d);
+    const dot=document.createElement('div'); dot.className='dot'; dots.appendChild(dot);
+  });
+}
+function renderSlide(){
+  document.querySelectorAll('.slide').forEach((s,i)=>s.classList.toggle('active', i===slideIdx));
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('on', i===slideIdx));
+}
+function shiftSlide(dir){
+  slideIdx = (slideIdx + dir + SLIDES.length) % SLIDES.length;
+  renderSlide();
+  resetTimer();
+}
+function resetTimer(){
+  clearInterval(slideTimer);
+  slideTimer = setInterval(()=>{ slideIdx=(slideIdx+1)%SLIDES.length; renderSlide(); }, 3200);
+}
+function startSlideshow(){
+  if(!document.getElementById('slideshow').childElementCount) buildSlideshow();
+  slideIdx=0; renderSlide(); resetTimer();
+}
+
+/* ================= CONFETTI ================= */
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+function resizeCanvas(){ canvas.width=innerWidth; canvas.height=innerHeight; }
+resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+function burstConfetti(){
+  const colors=['#f2966b','#f6d186','#6fcfc0','#e79bb0','#fbf6ee'];
+  const particles = Array.from({length:90}, ()=>({
+    x: canvas.width/2, y: canvas.height*0.35,
+    vx:(Math.random()-0.5)*10, vy:Math.random()*-8-2,
+    size:Math.random()*6+4, color:colors[Math.floor(Math.random()*colors.length)],
+    rot:Math.random()*360, vr:(Math.random()-0.5)*10, life:0
+  }));
+  let frame=0;
+  function tick(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    frame++;
+    particles.forEach(p=>{
+      p.vy += 0.25; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life++;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color; ctx.globalAlpha = Math.max(0, 1-p.life/90);
+      ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+      ctx.restore();
+    });
+    if(frame<100) requestAnimationFrame(tick);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  tick();
+}
+</script>
+</body>
+</html>
