@@ -526,9 +526,9 @@ function buildInteractive(m, zone){
   }
   else if(m.type==='minecraft'){
     const grid = document.createElement('div'); grid.className='mc-grid';
-    const heartCells = [9,10,12,13,16,17,18,19,20,21,23,24,25,26,27,31,32,33,39];
+    const heartCells = [8,9,11,12,14,15,16,17,18,19,20,22,23,24,25,26,30,31,32,38];
     const cells=[];
-    for(let i=0;i<42;i++){
+    for(let i=0;i<49;i++){
       const c=document.createElement('div'); c.className='mc-cell';
       grid.appendChild(c); cells.push(c);
     }
@@ -570,15 +570,15 @@ function buildInteractive(m, zone){
    gradient background. To use a real photo, replace the "bg" value with:
    url('your-image.jpg') center/cover   — and add the image file alongside this HTML. */
 const SLIDES = [
-  {bg:"url('aqua.jpg') center/cover", cap:'Aquarium, date one'},
-  {bg:"url('ice.jpg') center/cover", cap:'Ice skating, date two'},
-  {bg:"url('jt.jpg') center/cover", cap:'Joshua Tree'},
-  {bg:"url('beach.jpg') center/cover", cap:'Beach days'},
-  {bg:"url('dallas.jpg') center/cover", cap:'Dallas visit'},
-  {bg:"url('house.png') center/cover", cap:'Our Minecraft world'},
-  {bg:"url('couch.jpg') center/cover", cap:'Dinners & movie nights'},
-  {bg:"url('one_year.jpg') center/cover", cap:'Us, one year in'},
-  {bg:"url('photostrip.png') center 40%/cover", cap:'I LOVE YOU'},
+  {bg:"url('pics/aqua.jpg') center/cover", cap:'Aquarium, date one'},
+  {bg:"url('pics/ice.jpg') center/cover", cap:'Ice skating, date two'},
+  {bg:"url('pics/jt.jpg') center/cover", cap:'Joshua Tree'},
+  {bg:"url('pics/beach.jpg') center/cover", cap:'Beach days'},
+  {bg:"url('pics/dallas.jpg') center/cover", cap:'Dallas visit'},
+  {bg:"url('pics/house.png') center/cover", cap:'Our Minecraft world'},
+  {bg:"url('pics/couch.jpg') center/cover", cap:'Dinners & movie nights'},
+  {bg:"url('pics/one_year.jpg') center/cover", cap:'Us, one year in'},
+  {bg:"url('pics/photostrip.png') center 40%/cover", cap:'I LOVE YOU'},
 ];
 let slideIdx=0, slideTimer=null;
 function buildSlideshow(){
